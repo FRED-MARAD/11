@@ -218,15 +218,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            function generateSerialNumber() {
-                const letters = Array.from({ length: 3 }, () =>
-                    String.fromCharCode(65 + Math.floor(Math.random() * 26))
-                ).join('');
-                const digits = Array.from({ length: 6 }, () =>
-                    Math.floor(Math.random() * 10)
-                ).join('');
-                return `${letters} ${digits}`;
-            }
         
             function getRandomIssueDate() {
                 const now = new Date();
@@ -248,7 +239,6 @@
             const expiryDate = new Date(issueDate);
             expiryDate.setFullYear(issueDate.getFullYear() + 10);
         
-            document.getElementById("seria_numer").textContent = serial;
             document.getElementById("wydany").textContent = formatDate(issueDate);
             document.getElementById("waznosc").textContent = formatDate(expiryDate);
         });
@@ -256,4 +246,5 @@
         
     
 </body>
+
 
