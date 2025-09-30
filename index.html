@@ -206,62 +206,84 @@
 
     <script src="assets/index.js"></script>
     <script src="assets/manifest.js"></script>
- <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        function generateSerialNumber() {
-            const letters = Array.from({ length: 3 }, () =>
-                String.fromCharCode(65 + Math.floor(Math.random() * 26))
-            ).join('');
-            const digits = Array.from({ length: 6 }, () =>
-                Math.floor(Math.random() * 10)
-            ).join('');
-            return `${letters} ${digits}`;
-        }
+     <script>
 
-        function getRandomIssueDate() {
-            const now = new Date();
-            const past = new Date();
-            past.setFullYear(now.getFullYear() - 1);
-            const randomTime = past.getTime() + Math.random() * (now.getTime() - past.getTime());
-            return new Date(randomTime);
-        }
+function generateDocumentNumber() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const series = Array.from({ length: 3 }, () =>
+    letters[Math.floor(Math.random() * letters.length)]
+  ).join("");
 
-        function formatDate(date) {
-            const d = String(date.getDate()).padStart(2, '0');
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const y = date.getFullYear();
-            return `${d}.${m}.${y}`;
-        }
+  const number = Math.floor(100000 + Math.random() * 900000); // 6-cyfrowy numer
+  return `${series} ${number}`;
+}
 
-        // 🔒 Pobierz dane z localStorage
-        let serial = localStorage.getItem("seria_numer");
-        let issueDate = localStorage.getItem("wydany");
-        let expiryDate = localStorage.getItem("waznosc");
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("seria_numer");
+  if (input) {
+    input.value = generateDocumentNumber();
+  }
+});
 
-        // Jeśli brak → wygeneruj nowe i zapisz
-        if (!serial || !issueDate || !expiryDate) {
-            serial = generateSerialNumber();
-            const issue = getRandomIssueDate();
-            const expiry = new Date(issue);
-            expiry.setFullYear(issue.getFullYear() + 10);
 
-            issueDate = formatDate(issue);
-            expiryDate = formatDate(expiry);
 
-            localStorage.setItem("seria_numer", serial);
-            localStorage.setItem("wydany", issueDate);
-            localStorage.setItem("waznosc", expiryDate);
-        }
+        function getRandomDateWithinLastYears(years = 2) {
+    const now = new Date();
+    const past = new Date();
+    past.setFullYear(now.getFullYear() - years);
+    return new Date(past.getTime() + Math.random() * (now.getTime() - past.getTime()));
+}
 
-        // 🖊️ Wstaw dane do strony
-        document.getElementById("seria_numer").textContent = serial;
-        document.getElementById("wydany").textContent = issueDate;
-        document.getElementById("waznosc").textContent = expiryDate;
-    });
-</script>
+function formatDate(date) {
+    const dd = String(date.getDate()).padStart(2, '0');
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const yyyy = date.getFullYear();
+    return `${dd}.${mm}.${yyyy}`;
+}
+
+function calculateDates() {
+    const day = parseInt(document.querySelectorAll('.date_input')[0].value);
+    const month = parseInt(document.querySelectorAll('.date_input')[1].value);
+    const year = parseInt(document.querySelectorAll('.date_input')[2].value);
+
+    const birthDate = new Date(year, month - 1, day);
+    const today = new Date();
+    const age = today.getFullYear() - birthDate.getFullYear() -
+               (today.getMonth() < birthDate.getMonth() || 
+               (today.getMonth() === birthDate.getMonth() && today.getDate() < birthDate.getDate()) ? 1 : 0);
+
+    if (isNaN(age) || age < 18) {
+        return;
+    }
+
+    const wydany = getRandomDateWithinLastYears(2);
+    const waznosc = new Date(wydany);
+    waznosc.setFullYear(wydany.getFullYear() + 5);
+
+    document.getElementById("wydany").value = formatDate(wydany);
+    document.getElementById("waznosc").value = formatDate(waznosc);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    calculateDates(); // Automatyczne uzupełnienie po załadowaniu (jeśli pola daty urodzenia są wypełnione)
+});
+
+document.getElementById("generate-dates-btn").addEventListener("click", () => {
+    calculateDates();
+});
+
+
+
+
+
+
+
+
+    </script>
 
     
 
 </body>
+
 
 
